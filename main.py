@@ -4,11 +4,16 @@ import random
 
 BACKGROUND_COLOR = "#B1DDC6"
 current_card = {}
+data = {}
 
 # ---------------------------- PANDAS ------------------------------- #
 
-data = pandas.read_csv("./data/french_words.csv")
-vocabulary_to_learn = data.to_dict(orient="records")
+try:
+    data = pandas.read_csv("./data/words_to_learn.csv")
+except FileNotFoundError:
+    data = pandas.read_csv("./data/french_words.csv")
+finally:
+    vocabulary_to_learn = data.to_dict(orient="records")
 
 # ---------------------------- NEXT CARD ------------------------------- #
 
@@ -28,6 +33,13 @@ def flip_card(img, lang, fill):
     flashcard.itemconfig(image, image=img)
     flashcard.itemconfig(title, text=lang, fill=fill)
     flashcard.itemconfig(word, text=current_card[lang], fill=fill)
+
+
+def update_vocabulary_to_learn():
+    vocabulary_to_learn.remove(current_card)
+    to_learn_data = pandas.DataFrame(vocabulary_to_learn)
+    to_learn_data.to_csv("./data/words_to_learn.csv", index=False)
+    next_card()
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -58,7 +70,7 @@ wrong_btn = Button(image=wrong_btn_img, highlightthickness=0, command=next_card)
 wrong_btn.grid(row=1, column=0)
 
 right_btn_img = PhotoImage(file="./images/right.png")
-right_btn = Button(image=right_btn_img, highlightthickness=0, command=next_card)
+right_btn = Button(image=right_btn_img, highlightthickness=0, command=update_vocabulary_to_learn)
 right_btn.grid(row=1, column=1)
 
 next_card()
