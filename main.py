@@ -3,7 +3,7 @@ import pandas
 import random
 
 BACKGROUND_COLOR = "#B1DDC6"
-waiting_to_flip = None
+current_card = {}
 
 # ---------------------------- PANDAS ------------------------------- #
 
@@ -14,27 +14,24 @@ vocabulary_to_learn = data.to_dict(orient="records")
 
 
 def next_card():
-    global waiting_to_flip
-    if waiting_to_flip:
-        window.after_cancel(waiting_to_flip)
+    global waiting_to_flip, current_card
+    window.after_cancel(waiting_to_flip)
 
-    word_pair = random.choice(vocabulary_to_learn)
-    front = {'img': card_front_img, 'lang': 'French', 'word': word_pair['French'], 'fill': 'black'}
-    back = {'img': card_back_img, 'lang': 'English', 'word': word_pair['English'], 'fill': 'white'}
-
-    flip_card(front)
-    waiting_to_flip = window.after(3000, flip_card, back)
+    current_card = random.choice(vocabulary_to_learn)
+    flip_card(card_front_img, 'French', 'black')
+    waiting_to_flip = window.after(3000, flip_card, card_back_img, 'English', 'white')
 
 # ---------------------------- FLIP CARD ------------------------------- #
 
 
-def flip_card(side):
-    flashcard.itemconfig(image, image=side['img'])
-    flashcard.itemconfig(title, text=side['lang'], fill=side['fill'])
-    flashcard.itemconfig(word, text=side['word'], fill=side['fill'])
+def flip_card(img, lang, fill):
+    flashcard.itemconfig(image, image=img)
+    flashcard.itemconfig(title, text=lang, fill=fill)
+    flashcard.itemconfig(word, text=current_card[lang], fill=fill)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
+
 
 window = Tk()
 window.title("Learn French with Flashcards")
@@ -42,6 +39,8 @@ window.config(bg=BACKGROUND_COLOR, padx=50, pady=50)
 
 card_front_img = PhotoImage(file="./images/card_front.png")
 card_back_img = PhotoImage(file="./images/card_back.png")
+
+waiting_to_flip = window.after(3000, flip_card, card_back_img, 'English', 'white')
 
 # GRID
 # row 1
