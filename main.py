@@ -8,16 +8,16 @@ word_pair = {}
 # ---------------------------- PANDAS ------------------------------- #
 
 data = pandas.read_csv("./data/french_words.csv")
-vocabulary_dict = data.to_dict(orient="records")
+vocabulary_to_learn = data.to_dict(orient="records")
 
 # ---------------------------- RANDOM WORD ------------------------------- #
 
 
-def display_random_word():
+def next_card():
     global word_pair
-    word_pair = random.choice(vocabulary_dict)
-    flashcard.itemconfig(word, text=f"{word_pair['French']}")
-    print(word_pair)
+    word_pair = random.choice(vocabulary_to_learn)
+    flashcard.itemconfig(title, text="French")
+    flashcard.itemconfig(word, text=word_pair['French'])
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -32,18 +32,19 @@ flashcard = Canvas(width=830, height=530, highlightthickness=0, bg=BACKGROUND_CO
 card_front_img = PhotoImage(file="./images/card_front.png")
 flashcard.create_image(415, 265, image=card_front_img)
 
-title = flashcard.create_text(400, 150, text="French", font=("Helvetic", 35, "italic"))
+title = flashcard.create_text(400, 150, text="", font=("Helvetic", 35, "italic"))
 word = flashcard.create_text(400, 265, text="", font=("Helvetica", 55, "bold"))
 
 flashcard.grid(row=0, column=0, columnspan=2)
 
 # row 2
 wrong_btn_img = PhotoImage(file="./images/wrong.png")
-wrong_btn = Button(image=wrong_btn_img, highlightthickness=0, command=display_random_word)
+wrong_btn = Button(image=wrong_btn_img, highlightthickness=0, command=next_card)
 wrong_btn.grid(row=1, column=0)
 
 right_btn_img = PhotoImage(file="./images/right.png")
-right_btn = Button(image=right_btn_img, highlightthickness=0, command=display_random_word)
+right_btn = Button(image=right_btn_img, highlightthickness=0, command=next_card)
 right_btn.grid(row=1, column=1)
 
+next_card()
 window.mainloop()
